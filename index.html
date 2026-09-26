@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.0.37</title>
+    <title>The CB Command Center v10.0.40</title>
     <style>
         :root {
             --primary: #1a73e8; 
@@ -115,7 +115,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag">v10.0.37</span>
+    <span class="version-tag">v10.0.40</span>
 </div>
 
 <!-- V10 SEQUENCE & ROUTING BANNER -->
@@ -144,7 +144,7 @@
             <div class="card-header">
                 <h3 style="color: var(--primary);">🔵 RAW INPUT WORKSPACE</h3>
                 <div style="display: flex; gap: 10px;">
-                    <button id="v7FallbackBtn" class="btn-outline btn-danger" style="display:none;" onclick="generateV7Fallback()">🚨 V7 Fallback</button>
+                    <button id="emergencyFallbackBtn" class="btn-outline btn-danger" style="display:none;" onclick="generateEmergencyFallback()">🚨 Emergency Fallback</button>
                     <button class="btn-outline" onclick="clearWorkspace()">🗑️ Clear</button>
                 </div>
             </div>
@@ -515,7 +515,7 @@
         document.getElementById('duplicateWarning').style.display = 'none';
         document.getElementById('priceWarning').style.display = 'none';
         document.getElementById('outputSection').style.display = 'none';
-        document.getElementById('v7FallbackBtn').style.display = 'none';
+        document.getElementById('emergencyFallbackBtn').style.display = 'none';
         fetchCloudHistory(); 
     }
 
@@ -710,7 +710,10 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             
             const aiData = JSON.parse(aiText);
 
-            const cleanAiPrice = aiData.sale_price.replace('$', '').replace(fulfillmentStatus, '').trim();
+            // V10.0.38 MULTI-KEY TITLE SHIELD: Prevents "undefined" in ledger
+            const cleanTitle = (aiData.cleaned_title || aiData.title || aiData.product_name || aiData.product_title || "Featured Deal").trim();
+
+            const cleanAiPrice = aiData.sale_price ? aiData.sale_price.replace('$', '').replace(fulfillmentStatus, '').trim() : "???";
             if (cleanAiPrice !== "???" && !rawText.includes(cleanAiPrice)) {
                 document.getElementById('priceWarning').style.display = 'flex';
             }
@@ -773,15 +776,15 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 const fullTimestampET = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
                 
-                sessionHistory.push({ url: extractedURL, title: aiData.cleaned_title });
-                globalDealHistory.push([fullTimestampET, posterName, aiData.cleaned_title, extractedURL]);
+                sessionHistory.push({ url: extractedURL, title: cleanTitle });
+                globalDealHistory.push([fullTimestampET, posterName, cleanTitle, extractedURL]);
                 
                 const historyLog = document.getElementById('historyLog');
                 if(document.getElementById('emptyHistory')) document.getElementById('emptyHistory').remove();
                 const historyCard = `
                     <div class="history-card">
                         <div class="history-meta"><span>${posterName}</span><span>${timestamp}</span></div>
-                        <div class="history-title">Deal ${document.getElementById('dealNumber').value}: ${aiData.cleaned_title}</div>
+                        <div class="history-title">Deal ${document.getElementById('dealNumber').value}: ${cleanTitle}</div>
                     </div>
                 `;
                 historyLog.innerHTML = historyCard + historyLog.innerHTML;
@@ -791,7 +794,7 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ poster: posterName, title: aiData.cleaned_title, url: extractedURL })
+                    body: JSON.stringify({ poster: posterName, title: cleanTitle, url: extractedURL })
                 }).catch(err => console.log("Cloud save error", err));
 
                 let currentNum = parseInt(document.getElementById('dealNumber').value);
@@ -803,9 +806,33 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             document.getElementById('customLine').value = '';
             document.getElementById('duplicateWarning').style.display = 'none';
 
+            // V10.0.40: Reset outage timer and hide button on successful generation
+            localStorage.removeItem('cb_outage_start');
+            document.getElementById('emergencyFallbackBtn').style.display = 'none';
+
         } catch (error) {
             alert("Engine Error: " + error.message);
-            document.getElementById('v7FallbackBtn').style.display = "flex";
+
+            // V10.0.40: 20-MINUTE OUTAGE GATE
+            const now = Date.now();
+            let firstFailure = localStorage.getItem('cb_outage_start');
+            
+            if (!firstFailure) {
+                // First failure logged
+                localStorage.setItem('cb_outage_start', now);
+                firstFailure = now;
+            }
+
+            const minutesElapsed = (now - parseInt(firstFailure)) / (1000 * 60);
+
+            if (minutesElapsed >= 20) {
+                // Outage has lasted 20+ minutes of active attempts
+                document.getElementById('emergencyFallbackBtn').style.display = "flex";
+            } else {
+                const remaining = Math.ceil(20 - minutesElapsed);
+                console.log(`Outage active: ${remaining} minutes remaining before Emergency Fallback unlocks.`);
+            }
+
         } finally {
             btn.innerHTML = "✨ Generate Deal";
             btn.disabled = false;
@@ -919,15 +946,53 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
         });
     }
 
-    function generateV7Fallback() {
-        const v7Prompt = `SYSTEM ROLE: You are a strict formatting assistant. I will provide you with raw deal text that includes a URL. You will output EXACTLY 3 Post Variations and 1 Daily Thread Comment. Do NOT output any conversational filler.
+    // V10.0.39: Updated Emergency Fallback (Polymorphic Master Prompt)
+    function generateEmergencyFallback() {
+        const emergencyPrompt = `SYSTEM ROLE: You are an advanced polymorphic deal-formatting engine. You will receive raw deal text containing a product, pricing, and a link. You will output EXACTLY 3 Post Variations, 3 Comments, and 1 Daily Thread Comment. Do NOT output any conversational filler.
 
 RULES:
-1. POST VARIATIONS (1, 2, and 3): Print the deal information exactly as provided, but REMOVE THE URL. Below the deal info, write EXACTLY ONE casual, 1-line lifestyle sentence about using the product. Use a maximum of 1 emoji. Do NOT use internet slang. Do NOT use marketing words.
-2. DAILY THREAD COMMENT: Print the deal information exactly as provided, but REMOVE THE URL. Below the deal info, add a double line break, then write: "Here is the link: [Insert URL here]"`;
-        
-        navigator.clipboard.writeText(v7Prompt).then(() => {
-            alert("🚨 V7 Emergency Prompt copied to clipboard! Paste this into ChatGPT.");
+1. GLOBAL SHIELD (ABSOLUTE): You are STRICTLY FORBIDDEN from using any of these banned words or their variations: Buy, Order, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Markdown, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (in ANY context, do not say 'free of' or 'fur-free'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, essential.
+2. DATA INTEGRITY: You MUST include the exact sale price, regular price (strip the $ sign and replace the decimal with a space, e.g., "29 99"), full product title, retailer name, and any limits, S&S rules, or per-item math.
+3. POST VARIATIONS (1, 2, 3): 
+   - Write fluid, natural, casual paragraphs. Do NOT use rigid hyphens or bullet points.
+   - LINK BAN (NUCLEAR): You are STRICTLY FORBIDDEN from placing the link or any URL in the Post Variations!
+   - SYNTACTIC ENTROPY: You MUST use 3 completely different openings across the 3 posts:
+     * Variation 1: Open with the price/retailer discovery hook (e.g., 'Spotted a massive drop on...').
+     * Variation 2: Open with a household scenario or problem (e.g., 'If your living room needs...').
+     * Variation 3: Open with a personal/collective recommendation (e.g., 'We've been keeping tabs on...').
+   - THE BREATHER RULE: Use casual text-speak (ngl, tbh, lowkey, rn) in EXACTLY TWO variations. The remaining ONE variation MUST have zero slang.
+   - POINTER SUPPRESSION: Variations must end naturally on a lifestyle thought without saying 'the details are right below'.
+4. COMMENTS (1, 2, 3):
+   - TITLE BAN: Do NOT repeat the product title in comments. Use generic words like 'this one' or 'it'.
+   - IN-LINE EMBEDDING: You MUST embed the raw link naturally INSIDE the sentence with words before and after it (e.g., 'I found this one right over at [URL] and it works wonders'). Do NOT use the phrase 'Here is the link'. Never put the link on its own standalone line.
+   - ENGAGEMENT: Ask a low-effort preference question about the product in 2 of the comments. Do NOT use engagement bait phrases like 'let me know' or 'tell me below'.
+5. DAILY THREAD COMMENT:
+   - Weave the sale price, regular price, title, retailer, extra specs, and the link into one fluid, conversational message. Do NOT use hyphens to separate the price and title.
+
+REQUIRED OUTPUT FORMAT:
+=== POST VARIATION 1 ===
+[Text]
+
+=== POST VARIATION 2 ===
+[Text]
+
+=== POST VARIATION 3 ===
+[Text]
+
+=== COMMENT 1 ===
+[Text with embedded link]
+
+=== COMMENT 2 ===
+[Text with embedded link]
+
+=== COMMENT 3 ===
+[Text with embedded link]
+
+=== DAILY THREAD COMMENT ===
+[Text with embedded link]`;
+
+        fallbackCopy(emergencyPrompt, () => {
+            alert("🚨 Emergency Fallback Prompt copied to clipboard! Paste this into ChatGPT.");
         });
     }
 </script>

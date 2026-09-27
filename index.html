@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.0.58</title>
+    <title>The CB Command Center v10.0.59</title>
     <!-- V10.0.56 ANTI-CACHE HEADERS -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -119,7 +119,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.58 🔄</span>
+    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.59 🔄</span>
 </div>
 
 <!-- V10 SEQUENCE & ROUTING BANNER -->
@@ -862,6 +862,14 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 
                 let commentLines = commentText.includes('||') ? commentText.split('||').map(s => s.trim()) : commentText.split(/(?<=[.!?])\s+/).map(s => s.trim());
                 commentLines = commentLines.filter(line => line.length > 0);
+
+                // V10.0.59 COMMENT GEOMETRY ENFORCER: Physically forces link off Line 1
+                if (commentLines.length > 1 && commentLines[0].includes("http")) {
+                    // Swap line 0 and line 1 so human text is GUARANTEED to be on Line 1!
+                    let temp = commentLines[0];
+                    commentLines[0] = commentLines[1];
+                    commentLines[1] = temp;
+                }
 
                 // V10.0.54: Comments get 0 to 2 emojis
                 let emojifiedComment = applyEmojiDensity(commentLines, 0, 2);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.0.70</title>
+    <title>The CB Command Center v10.0.71</title>
     <!-- V10.0.56 ANTI-CACHE HEADERS -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -116,7 +116,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.70 🔄</span>
+    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.71 🔄</span>
 </div>
 
 <div id="routingBanner" class="routing-banner route-acct1">
@@ -800,10 +800,14 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 cleanTitle = extractTitleFromRawText(rawText);
             } 
 
-            const cleanAiPrice = aiData.sale_price ? aiData.sale_price.replace('$', '').replace(fulfillmentStatus, '').trim() : "???";
+            let cleanAiPrice = aiData.sale_price ? aiData.sale_price.replace(/\$/g, '').trim() : "???";
             if (cleanAiPrice !== "???") {
+                // Strip fulfillment status tokens case-insensitively
+                const fulfillmentRegex = new RegExp(`\\b(${fulfillmentStatus}|shipped|pickup|total|in-store)\\b`, 'gi');
+                cleanAiPrice = cleanAiPrice.replace(fulfillmentRegex, '').trim();
+
                 const priceParts = cleanAiPrice.split(/[-–—]/).map(p => p.trim()).filter(p => p.length > 0);
-                const priceMatchFound = priceParts.some(part => rawText.includes(part));
+                const priceMatchFound = priceParts.some(part => part.length > 0 && rawText.includes(part));
                 if (!priceMatchFound) {
                     document.getElementById('priceWarning').style.display = 'flex';
                 }
@@ -884,10 +888,44 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 let commentLines = commentText.includes('||') ? commentText.split('||').map(s => s.trim()) : commentText.split(/(?<=[.!?])\s+/).map(s => s.trim());
                 commentLines = commentLines.filter(line => line.length > 0);
 
-                if (commentLines.length > 1 && commentLines[0].includes("http")) {
-                    let temp = commentLines[0];
-                    commentLines[0] = commentLines[1];
-                    commentLines[1] = temp;
+                // ABSOLUTE COMMENT GEOMETRY FIREWALL: Line 1 must NEVER contain an outbound link
+                if (commentLines.length > 0 && commentLines[0].includes("http")) {
+                    if (commentLines.length > 1) {
+                        // Scan for the first line that does NOT have a link and swap it with Line 1
+                        const safeLineIndex = commentLines.findIndex(l => !l.includes("http"));
+                        if (safeLineIndex !== -1) {
+                            let temp = commentLines[0];
+                            commentLines[0] = commentLines[safeLineIndex];
+                            commentLines[safeLineIndex] = temp;
+                        } else {
+                            // If all lines contain a link, prepend an organic human anchor
+                            const organicAnchors = [
+                                "Such a solid everyday find.",
+                                "Definitely worth keeping on your radar.",
+                                "One of those things you will use constantly.",
+                                "Adding this one to the favorites list."
+                            ];
+                            commentLines.unshift(organicAnchors[Math.floor(Math.random() * organicAnchors.length)]);
+                        }
+                    } else {
+                        // Single-line scenario: split link from text if embedded
+                        const urlMatch = commentLines[0].match(/(https?:\/\/[^\s]+)/);
+                        if (urlMatch) {
+                            const foundUrl = urlMatch[0];
+                            const textWithoutUrl = commentLines[0].replace(foundUrl, '').trim();
+                            if (textWithoutUrl.length > 5) {
+                                commentLines = [textWithoutUrl, foundUrl];
+                            } else {
+                                const organicAnchors = [
+                                    "Such a solid everyday find.",
+                                    "Definitely worth keeping on your radar.",
+                                    "One of those things you will use constantly.",
+                                    "Adding this one to the favorites list."
+                                ];
+                                commentLines = [organicAnchors[Math.floor(Math.random() * organicAnchors.length)], foundUrl];
+                            }
+                        }
+                    }
                 }
 
                 let emojifiedComment = applyEmojiDensity(commentLines, 0, 2);
@@ -927,7 +965,7 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             document.getElementById('out-dt').setAttribute('data-raw', finalDt);
             currentRawOutput += `=== DAILY THREAD COMMENT ===\n${finalDt}\n\n`;
 
-            let phase0Text = `[DEAL: ${document.getElementById('dealNumber').value} | POSTER: ${posterName} | VER: v10.0.70]\n${rawText}`;
+            let phase0Text = `[DEAL: ${document.getElementById('dealNumber').value} | POSTER: ${posterName} | VER: v10.0.71]\n${rawText}`;
             if (customLine) phase0Text += `\n[Custom Injection: ${customLine}]`;
             document.getElementById('out-phase0').innerText = phase0Text;
 

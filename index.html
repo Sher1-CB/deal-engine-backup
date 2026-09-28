@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.0.65</title>
+    <title>The CB Command Center v10.0.66</title>
     <!-- V10.0.56 ANTI-CACHE HEADERS -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -119,7 +119,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.65 🔄</span>
+    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.66 🔄</span>
 </div>
 
 <!-- V10 SEQUENCE & ROUTING BANNER -->
@@ -800,9 +800,14 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 cleanTitle = extractTitleFromRawText(rawText);
             } 
 
+            // V10.0.66 SMART PRICE RANGE VALIDATOR: Prevents false alarms on ranges like $5.39 - $7.79
             const cleanAiPrice = aiData.sale_price ? aiData.sale_price.replace('$', '').replace(fulfillmentStatus, '').trim() : "???";
-            if (cleanAiPrice !== "???" && !rawText.includes(cleanAiPrice)) {
-                document.getElementById('priceWarning').style.display = 'flex';
+            if (cleanAiPrice !== "???") {
+                const priceParts = cleanAiPrice.split(/[-–—]/).map(p => p.trim()).filter(p => p.length > 0);
+                const priceMatchFound = priceParts.some(part => rawText.includes(part));
+                if (!priceMatchFound) {
+                    document.getElementById('priceWarning').style.display = 'flex';
+                }
             }
 
             // V10.0.53 STRICT EMOJI SCRUBBER
@@ -867,16 +872,16 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 document.getElementById(`out-post${i+1}`).setAttribute('data-raw', finalPost);
                 currentRawOutput += `=== POST VARIATION ${i+1} ===\n${finalPost}\n\n`;
                 
-                // Comment Normalizer
+                // V10.0.66 FUZZY CLOAK: Typo-proof replacement for comments (catches [TARGET_SLort], etc.)
                 let cloaked = cloakURL(extractedURL);
                 let rawComment = aiData.comments && aiData.comments[i] ? aiData.comments[i] : "";
                 let commentText = typeof rawComment === 'object' ? Object.values(rawComment).join(' ') : String(rawComment);
                 
-                // V10.0.65 CLEAN CLOAK: Only replaces once to prevent double-hashing
-                if (commentText.includes('[TARGET_SLOT]')) {
-                    commentText = commentText.replace('[TARGET_SLOT]', cloaked);
+                const targetRegex = /\[TARGET[^\]]*\]/gi;
+                if (targetRegex.test(commentText)) {
+                    commentText = commentText.replace(targetRegex, cloaked);
                 } else if (commentText.includes('[URL]')) {
-                    commentText = commentText.replace('[URL]', cloaked);
+                    commentText = commentText.replace(/\[URL\]/gi, cloaked);
                 } else if (commentText.includes(extractedURL)) {
                     commentText = commentText.replace(extractedURL, cloaked);
                 }
@@ -900,16 +905,16 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 currentRawOutput += `=== COMMENT ${i+1} ===\n${finalComment}\n\n`;
             }
 
-            // Daily Thread Normalizer
+            // V10.0.66 FUZZY CLOAK: Typo-proof replacement for Daily Thread
             let dtCloaked = cloakURL(extractedURL);
             let rawDt = aiData.daily_thread ? aiData.daily_thread : "";
             let dtText = typeof rawDt === 'object' ? Object.values(rawDt).join(' ') : String(rawDt);
             
-            // V10.0.65 CLEAN CLOAK: Only replaces once for Daily Thread
-            if (dtText.includes('[TARGET_SLOT]')) {
-                dtText = dtText.replace('[TARGET_SLOT]', dtCloaked);
+            const dtTargetRegex = /\[TARGET[^\]]*\]/gi;
+            if (dtTargetRegex.test(dtText)) {
+                dtText = dtText.replace(dtTargetRegex, dtCloaked);
             } else if (dtText.includes('[URL]')) {
-                dtText = dtText.replace('[URL]', dtCloaked);
+                dtText = dtText.replace(/\[URL\]/gi, dtCloaked);
             } else if (dtText.includes(extractedURL)) {
                 dtText = dtText.replace(extractedURL, dtCloaked);
             }

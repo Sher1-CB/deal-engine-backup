@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.0.59</title>
+    <title>The CB Command Center v10.0.65</title>
     <!-- V10.0.56 ANTI-CACHE HEADERS -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -119,7 +119,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.59 🔄</span>
+    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.65 🔄</span>
 </div>
 
 <!-- V10 SEQUENCE & ROUTING BANNER -->
@@ -726,7 +726,7 @@
             prompt = `Analyze this deal: "${rawText}"
 Return ONLY a valid JSON object. Do NOT use markdown. Escape all internal double quotes. NO NOTES/COMMENTS (NUCLEAR): You are STRICTLY FORBIDDEN from adding any notes, explanations, commentary, or asterisks (*) inside or outside the JSON. Return pure JSON only.
 "retailer_name": (String. Extract the FULL retailer name, e.g., "Amazon", "Walmart". Fix leetspeak.),
-"sale_price": (String. Extract the sale price. Extract ONLY numbers and $ signs, then ADD the word '${fulfillmentStatus}'. Example: '$5.99 ${fulfillmentStatus}'. If none, write "???"),
+"sale_price": (String. Extract the sale price. You MUST ensure a '$' sign is included at the front, then ADD the word '${fulfillmentStatus}'. Example: '$5.99 ${fulfillmentStatus}'. NEVER drop the '$' sign. If none, write "???"),
 "reg_price": (String. Extract regular price. Strip the $ sign and REPLACE the decimal with a space, e.g. "34 99". If none, write "NONE"),
 "cleaned_title": (String. MANDATORY TITLE LOCK: Copy the primary product name line exactly as written. VERBATIM OVERRIDE (ABSOLUTE): If the title line starts with or contains 'ADD', 'BUY', or 'QTY' (e.g., 'ADD 3 QTY Dove Body Wash'), you MUST keep those exact words in the title! You are STRICTLY FORBIDDEN from stripping them out to 'clean' the name.),
 "b2_verification": (JSON Object. Extract facts from the extra text. If none, write "NONE".
@@ -738,7 +738,7 @@ Return ONLY a valid JSON object. Do NOT use markdown. Escape all internal double
 "b5_verification": (String. Extract retailer-specific shipping/pickup rules like 'Walmart+ or $35 order', 'Walgreens Pickup'. Ignore basic 'Free Shipping'. If none, write "NONE"),
 "b8_verification": (String. Extract S&S, Subscribe & Save, or Promo Codes. If none, write "NONE"),
 "features_catchall": (String. EXTRA LINE VACUUM: Look at EVERY line in the raw text. If a line is NOT the title, price, or URL, it is an extra fact! You MUST extract it here (e.g., 'several scents', 'washable', 'only on black', 'size 44x19', 'includes 2 batteries'). If multiple extra lines exist, combine them all here. If none, write "NONE"),
-"post_variations": (Array of 3 strings. You are a polymorphic text engine. PRICE LOCK (ABSOLUTE): You MUST include the exact sale_price (with $ sign) and reg_price in EVERY SINGLE paragraph. RETAILER LOCK (ABSOLUTE): You MUST explicitly state the retailer_name (e.g., 'on Amazon', 'at Woot') in EVERY SINGLE post variation! ANTI-STUTTER LOCK: Never repeat the price or title more than ONCE per paragraph. REGULAR PRICE FORMAT: Print reg_price WITHOUT dollar signs or decimals (e.g., 'down from 89 99'). ALL-FACTS INJECTION MANDATE: You MUST weave all extra facts (b2, b5, b8, features_catchall) into EVERY variation! VERBATIM TITLE MANDATE: You MUST use the full, exact cleaned_title verbatim (do NOT strip 'ADD' or 'QTY' from the title!). BUNDLE/PIECE COUNT FIREWALL (ABSOLUTE): Do NOT confuse a multi-pack, set, or piece count in the title (e.g., '16 Pcs', '2 Pack', 'Set of 4', '50 Count') with a cart quantity! A '16 Pcs' cookware set is ONE single box. You are STRICTLY FORBIDDEN from telling the user to 'add 16 to your order' unless the extra text EXPLICITLY says 'ADD [X] QTY'. QUANTITY RULE: In your action sentence, say 'add [X] to your order' where [X] is ONLY the clean number (e.g. 'add 3 to your order'). Never write 'add 3 qty'. S&S TRADEMARK BAN (NUCLEAR): You are STRICTLY FORBIDDEN from using the phrase 'Subscribe & Save' or 'S&S'. Use generic terms like 'routine delivery', 'auto-delivery', or 'the subscribe option'. BRAND & LINK BAN (NUCLEAR): You are STRICTLY FORBIDDEN from using the word 'link', any URL, website names, or '[TARGET_SLOT]' in post variations! Never say 'check the link below'. SYNTACTIC ENTROPY MANDATE: You are STRICTLY FORBIDDEN from using the formula '[Title] is currently available on...'. Variation 1 MUST open with the price/retailer hook. Variation 2 MUST open with a lifestyle problem/scenario. Variation 3 MUST open with a personal/collective recommendation (e.g. 'We decided to pick up...', 'Our household loves...'). DYNAMIC LENGTH ENTROPY: Randomly vary the sentence count across variations (e.g., 2 to 5 sentences). POINTER SUPPRESSION: Variations MUST end naturally on a lifestyle thought! PRONOUNS: ${pronounInstruction} BREATHER LOCK (ABSOLUTE): Variation 1 and 2 MUST use casual text-speak (ngl, tbh, lowkey, rn). Variation 3 MUST have ZERO slang, written as a clean recommendation. NUCLEAR BAN: 'game changer', 'grab', 'markdown', 'marked down', 'breeze', 'link', 'savings', 'saving'. BANNED WORDS: Sale, Discount, Price, Cost, Checkout, Buy, Grab, URL, Promotion, Markdown, Marked down, Link, Savings, Save. DELIMITER LOCK: Separate every sentence with ' || ' and use proper punctuation.),
+"post_variations": (Array of 3 strings. You are a polymorphic text engine. PRICE LOCK (ABSOLUTE): You MUST include the exact sale_price (ALWAYS with a '$' sign, e.g. '$14.99') and reg_price in EVERY SINGLE paragraph. RETAILER LOCK (ABSOLUTE): You MUST explicitly state the retailer_name (e.g., 'on Amazon', 'at Woot') in EVERY SINGLE post variation! ANTI-STUTTER LOCK: Never repeat the price or title more than ONCE per paragraph. REGULAR PRICE FORMAT: Print reg_price WITHOUT dollar signs or decimals (e.g., 'down from 89 99'). ALL-FACTS INJECTION MANDATE: You MUST weave all extra facts (b2, b5, b8, features_catchall) into EVERY variation! VERBATIM TITLE MANDATE: You MUST use the full, exact cleaned_title verbatim (do NOT strip 'ADD' or 'QTY' from the title!). BUNDLE/PIECE COUNT FIREWALL (ABSOLUTE): Do NOT confuse a multi-pack, set, or piece count in the title (e.g., '16 Pcs', '2 Pack', 'Set of 4', '50 Count') with a cart quantity! A '16 Pcs' cookware set is ONE single box. You are STRICTLY FORBIDDEN from telling the user to 'add 16 to your order' unless the extra text EXPLICITLY says 'ADD [X] QTY'. QUANTITY RULE: In your action sentence, say 'add [X] to your order' where [X] is ONLY the clean number (e.g. 'add 3 to your order'). Never write 'add 3 qty'. CONTEXTUAL EXCEPTION: If 'QTY' is part of the official product title, keep it in the title, but do NOT say 'qty' in your action sentence. S&S TRADEMARK BAN (NUCLEAR): You are STRICTLY FORBIDDEN from using the phrase 'Subscribe & Save' or 'S&S'. Use generic terms like 'routine delivery', 'auto-delivery', or 'the subscribe option'. BRAND & LINK BAN (NUCLEAR): You are STRICTLY FORBIDDEN from using the word 'link', any URL, website names, or '[TARGET_SLOT]' in post variations! Never say 'check the link below'. SYNTACTIC ENTROPY MANDATE (ABSOLUTE): You are STRICTLY FORBIDDEN from repeating the formulas: 1) '[Title] is currently available on...', 2) 'You can find [Title] on...', and 3) 'We decided to pick up...'. Rotate openings naturally: Variation 1 opens with an action discovery or price hook (e.g., 'Spotted a sharp drop on...', 'Down to [Price] over on...'). Variation 2 opens with a household problem or seasonal scenario. Variation 3 opens with a unique personal thought (e.g., replacing an old item, an impulse win, an aesthetic fit). TERMINATION LAW (ABSOLUTE): The final sentence of every post variation MUST be a casual lifestyle, functional, or emotional thought (e.g. 'Can\\'t wait to wear these out', 'My kitchen feels complete'). You are STRICTLY FORBIDDEN from ending the post with a call-to-action pointer (e.g. NEVER write 'Head over to Amazon to check it out', NEVER write 'Find it on Amazon for $XX'). State the deal info ONCE in the body, and end strictly on lifestyle! PRONOUNS: ${pronounInstruction} SLANG DIVERSITY MATRIX: You MUST use casual text-speak in EXACTLY TWO variations (Variation 3 MUST be 100% clean with ZERO slang). ANTI-PARROT LOCK (ABSOLUTE): You are STRICTLY FORBIDDEN from overusing 'tbh' or 'rn'. Do NOT repeat the same slang word across variations! SLANG STACKING BAN: Use exactly ONE slang term per variation—NEVER stack multiple slang words together (do NOT write 'rn tbh lowkey'). Pull dynamically from these 4 categories: 1) Starters: 'ngl', 'tbf', 'imo', 'fr', 'no lie', 'hands down'. 2) High Praise: 'so clutch', '10/10', 'legit', 'unreal', 'living for this'. 3) Modifiers: 'lowkey', 'highkey', 'super', 'insanely', 'kinda', 'majorly'. 4) Casual shortcuts: 'rn', 'probs', 'obv', 'bc'. NUCLEAR BAN: 'game changer', 'grab', 'markdown', 'marked down', 'breeze', 'link', 'savings', 'saving', 'elevate', 'elevating'. BANNED WORDS: Sale, Discount, Price, Cost, Checkout, Buy, Grab, URL, Promotion, Markdown, Marked down, Link, Savings, Save. DELIMITER LOCK: Separate every sentence with ' || ' and use proper punctuation.),
 "comments": (Array of 3 strings. Write a casual comment. REGULAR COMMENT RULE (ABSOLUTE): You are STRICTLY FORBIDDEN from repeating the product title, and STRICTLY FORBIDDEN from repeating the price in the comments! The main post already has that. Keep comments short, focused on an organic question or casual thought. Use generic words like 'this one' or 'it'. COMMENT GEOMETRY LOCK (ABSOLUTE): The link MUST NEVER be on Line 1! Line 1 MUST be a human thought, question, or statement. Rotate the layout across the 3 comments: Comment 1 can wrap [TARGET_SLOT] inside a sentence. Comment 2 and 3 can place [TARGET_SLOT] on Line 2 or Line 3 below the text. ENGAGEMENT BAIT BAN: Never use 'let me know', 'tell me below', 'thoughts?', or 'comment below'. NUCLEAR BAN: 'share', 'grab', 'markdown'. BANNED WORDS: Sale, Discount, Price, Cost, Checkout, Buy, Grab, Share, Promotion, Markdown. Ask a low-effort question in 2 comments. QUESTION FIREWALL: Do NOT ask about colors or sizes unless mentioned in raw text. Write at least 2 distinct sentences. DELIMITER LOCK: Separate sentences with ' || '.),
 "daily_thread": (String. Weave the price, title, retailer_name, all extracted facts (including features_catchall), and the exact placeholder "[TARGET_SLOT]" into a single natural, conversational message. REGULAR PRICE FORMAT: Print reg_price without dollar signs or decimals (e.g. '89 99'). QUANTITY RULE: Say 'add [X] to your order' using only the clean number (e.g. 'add 3'). Never write 'add 3 qty'. ANTI-STUTTER: State price and title only ONCE. NUCLEAR BAN: 'share', 'grab', 'markdown', 'marked down'. BANNED WORDS: Sale, Discount, Price, Cost, Checkout, Buy, Grab, Share, Promotion, Markdown, Marked down. DELIMITER LOCK: Separate sentences with ' || '.),
 "emoji_pool": (Array of 10 literal Unicode emoji characters highly specific to the product. Do NOT use commercial/money emojis.),
@@ -790,6 +790,11 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             const aiData = JSON.parse(aiText);
 
             // V10.0.41 BULLETPROOF TITLE SHIELD: AI Extraction + Local Raw-Text Fallback
+            // V10.0.63 DOLLAR SIGN ENFORCER: Guarantees sale price always has a '$'
+            if (aiData.sale_price && aiData.sale_price !== "???" && !aiData.sale_price.startsWith('$')) {
+                aiData.sale_price = '$' + aiData.sale_price.trim();
+            }
+
             let cleanTitle = (aiData.cleaned_title || aiData.title || aiData.product_name || aiData.product_title || "").trim();
             if (!cleanTitle || cleanTitle.toLowerCase() === "featured deal") {
                 cleanTitle = extractTitleFromRawText(rawText);
@@ -827,8 +832,16 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             const extractedURL = extractURL(rawText);
 
             for(let i=0; i<3; i++) {
-                // Post Normalizer
+                // V10.0.62: Post Normalizer + TARGET_SLOT Vaporizer
                 let rawPost = aiData.post_variations && aiData.post_variations[i] ? aiData.post_variations[i] : "";
+                
+                // JS SECURITY SHIELD: Physically erases [TARGET_SLOT] or [URL] if AI leaks it into posts
+                if (typeof rawPost === 'string') {
+                    rawPost = rawPost.replace(/\[TARGET_SLOT\]/gi, '').replace(/\[URL\]/gi, '').trim();
+                } else if (Array.isArray(rawPost)) {
+                    rawPost = rawPost.map(s => String(s).replace(/\[TARGET_SLOT\]/gi, '').replace(/\[URL\]/gi, '').trim());
+                }
+
                 let postLines = [];
                 if (Array.isArray(rawPost)) {
                     postLines = rawPost.map(s => String(s).trim()).filter(s => s.length > 0);
@@ -858,14 +871,21 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 let cloaked = cloakURL(extractedURL);
                 let rawComment = aiData.comments && aiData.comments[i] ? aiData.comments[i] : "";
                 let commentText = typeof rawComment === 'object' ? Object.values(rawComment).join(' ') : String(rawComment);
-                commentText = commentText.replace('[TARGET_SLOT]', cloaked).replace('[URL]', cloaked);
+                
+                // V10.0.65 CLEAN CLOAK: Only replaces once to prevent double-hashing
+                if (commentText.includes('[TARGET_SLOT]')) {
+                    commentText = commentText.replace('[TARGET_SLOT]', cloaked);
+                } else if (commentText.includes('[URL]')) {
+                    commentText = commentText.replace('[URL]', cloaked);
+                } else if (commentText.includes(extractedURL)) {
+                    commentText = commentText.replace(extractedURL, cloaked);
+                }
                 
                 let commentLines = commentText.includes('||') ? commentText.split('||').map(s => s.trim()) : commentText.split(/(?<=[.!?])\s+/).map(s => s.trim());
                 commentLines = commentLines.filter(line => line.length > 0);
 
                 // V10.0.59 COMMENT GEOMETRY ENFORCER: Physically forces link off Line 1
                 if (commentLines.length > 1 && commentLines[0].includes("http")) {
-                    // Swap line 0 and line 1 so human text is GUARANTEED to be on Line 1!
                     let temp = commentLines[0];
                     commentLines[0] = commentLines[1];
                     commentLines[1] = temp;
@@ -884,7 +904,15 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             let dtCloaked = cloakURL(extractedURL);
             let rawDt = aiData.daily_thread ? aiData.daily_thread : "";
             let dtText = typeof rawDt === 'object' ? Object.values(rawDt).join(' ') : String(rawDt);
-            dtText = dtText.replace('[TARGET_SLOT]', dtCloaked).replace('[URL]', dtCloaked);
+            
+            // V10.0.65 CLEAN CLOAK: Only replaces once for Daily Thread
+            if (dtText.includes('[TARGET_SLOT]')) {
+                dtText = dtText.replace('[TARGET_SLOT]', dtCloaked);
+            } else if (dtText.includes('[URL]')) {
+                dtText = dtText.replace('[URL]', dtCloaked);
+            } else if (dtText.includes(extractedURL)) {
+                dtText = dtText.replace(extractedURL, dtCloaked);
+            }
             
             let dtLines = dtText.includes('||') ? dtText.split('||').map(s => s.trim()) : dtText.split(/(?<=[.!?])\s+/).map(s => s.trim());
             dtLines = dtLines.filter(line => line.length > 0);

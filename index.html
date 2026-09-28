@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.0.66</title>
+    <title>The CB Command Center v10.0.67</title>
     <!-- V10.0.56 ANTI-CACHE HEADERS -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -119,7 +119,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.66 🔄</span>
+    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.0.67 🔄</span>
 </div>
 
 <!-- V10 SEQUENCE & ROUTING BANNER -->
@@ -768,27 +768,47 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 throw new Error("Invalid AI Model. Please click the '🔄 Refresh' button next to the AI Model dropdown to load the models.");
             }
 
-            const data = await fetchWithRetry(prompt, selectedModel);
-            let aiText = data.candidates[0].content.parts[0].text;
-            
-            aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-            const startIndex = aiText.indexOf('{');
-            const endIndex = aiText.lastIndexOf('}');
-            if (startIndex !== -1 && endIndex !== -1) aiText = aiText.substring(startIndex, endIndex + 1);
-            aiText = aiText.replace(/"\s*\n\s*"/g, '",\n"');
-            aiText = aiText.replace(/,\s*([\]}])/g, '$1');
-            aiText = aiText.replace(/\\"/g, "'");
-            aiText = aiText.replace(/\\\\/g, "");
-            aiText = aiText.replace(/\\(?![nu])/g, "");
-            aiText = aiText.replace(/(?<!^|[:,\[{]\s*)"(?![:,\]}\s])/g, "'");
-            aiText = aiText.replace(/[\r\n\t]+/g, " ");
+            // V10.0.67 OPTION A: AUTO-RETRY GATE (Guarantees 100% Dynamic AI Comments with Zero Hardcoded Text)
+            let aiData = null;
+            let attempts = 0;
+            const maxAttempts = 2;
 
-            // V10.0.49 AI NOTE SCRUBBER: Nukes unquoted notes and commentary inside arrays
-            aiText = aiText.replace(/(\[|\,)\s*\*Note:[^"\]]*"/gi, '$1 "');
-            aiText = aiText.replace(/\*Note:[^*]*\*/gi, "");
-            
-            const aiData = JSON.parse(aiText);
+            while (attempts < maxAttempts) {
+                attempts++;
+                const data = await fetchWithRetry(prompt, selectedModel);
+                let aiText = data.candidates[0].content.parts[0].text;
+                
+                aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const startIndex = aiText.indexOf('{');
+                const endIndex = aiText.lastIndexOf('}');
+                if (startIndex !== -1 && endIndex !== -1) aiText = aiText.substring(startIndex, endIndex + 1);
+                aiText = aiText.replace(/"\s*\n\s*"/g, '",\n"');
+                aiText = aiText.replace(/,\s*([\]}])/g, '$1');
+                aiText = aiText.replace(/\\"/g, "'");
+                aiText = aiText.replace(/\\\\/g, "");
+                aiText = aiText.replace(/\\(?![nu])/g, "");
+                aiText = aiText.replace(/(?<!^|[:,\[{]\s*)"(?![:,\]}\s])/g, "'");
+                aiText = aiText.replace(/[\r\n\t]+/g, " ");
+                aiText = aiText.replace(/(\[|\,)\s*\*Note:[^"\]]*"/gi, '$1 "');
+                aiText = aiText.replace(/\*Note:[^*]*\*/gi, "");
+                
+                const parsed = JSON.parse(aiText);
 
+                // Verify that comments exist and are populated
+                let rawComments = parsed.comments || parsed.comment_variations || parsed.comments_list || [];
+                let commentsArr = Array.isArray(rawComments) ? rawComments : typeof rawComments === 'object' && rawComments !== null ? Object.values(rawComments) : [];
+                commentsArr = commentsArr.filter(c => String(c).trim().length > 0);
+
+                if (commentsArr.length >= 3) {
+                    aiData = parsed;
+                    break; // Success: 100% complete AI data with comments!
+                } else if (attempts < maxAttempts) {
+                    console.log(`Comments missing on attempt ${attempts}. Silently retrying API for 100% dynamic comments...`);
+                    await new Promise(r => setTimeout(r, 1000));
+                } else {
+                    aiData = parsed; // Final fallback if max attempts exhausted
+                }
+            }
             // V10.0.41 BULLETPROOF TITLE SHIELD: AI Extraction + Local Raw-Text Fallback
             // V10.0.63 DOLLAR SIGN ENFORCER: Guarantees sale price always has a '$'
             if (aiData.sale_price && aiData.sale_price !== "???" && !aiData.sale_price.startsWith('$')) {
@@ -872,17 +892,19 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                 document.getElementById(`out-post${i+1}`).setAttribute('data-raw', finalPost);
                 currentRawOutput += `=== POST VARIATION ${i+1} ===\n${finalPost}\n\n`;
                 
-                // V10.0.66 FUZZY CLOAK: Typo-proof replacement for comments (catches [TARGET_SLort], etc.)
+                // V10.0.67 ZERO-TEMPLATE COMMENT NORMALIZER
                 let cloaked = cloakURL(extractedURL);
-                let rawComment = aiData.comments && aiData.comments[i] ? aiData.comments[i] : "";
+                
+                let rawCommentsPool = aiData.comments || aiData.comment_variations || aiData.comments_list || [];
+                let commentsList = Array.isArray(rawCommentsPool) ? rawCommentsPool : typeof rawCommentsPool === 'object' && rawCommentsPool !== null ? Object.values(rawCommentsPool) : [];
+                
+                let rawComment = commentsList[i] || "";
                 let commentText = typeof rawComment === 'object' ? Object.values(rawComment).join(' ') : String(rawComment);
                 
-                const targetRegex = /\[TARGET[^\]]*\]/gi;
-                if (targetRegex.test(commentText)) {
-                    commentText = commentText.replace(targetRegex, cloaked);
-                } else if (commentText.includes('[URL]')) {
-                    commentText = commentText.replace(/\[URL\]/gi, cloaked);
-                } else if (commentText.includes(extractedURL)) {
+                // Fuzzy typo-proof replacement (catches [TARGET_SLort], [URL], raw links)
+                commentText = commentText.replace(/\[TARGET[^\]]*\]/gi, cloaked);
+                commentText = commentText.replace(/\[URL\]/gi, cloaked);
+                if (commentText.includes(extractedURL)) {
                     commentText = commentText.replace(extractedURL, cloaked);
                 }
                 

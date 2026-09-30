@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The CB Command Center v10.2.03</title>
+    <title>The CB Command Center v10.2.05</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -115,7 +115,7 @@
             <p>Polymorphic Engine & Shift Manager</p>
         </div>
     </div>
-    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.2.03 🔄</span>
+    <span class="version-tag" style="cursor:pointer;" onclick="checkServerForUpdates(true)" title="Click to check for updates">v10.2.05 🔄</span>
 </div>
 
 <div class="main-grid">
@@ -649,7 +649,11 @@
             .replace(/\bShipped\s+Total\b/gi, 'Total')
             .replace(/\bPickup\s+Total\b/gi, 'Total')
             // 11. Erase hallucinated delimiters
-            .replace(/\|\|/g, '');
+            .replace(/\|\|/g, '')
+            // 12. Purge Slang Stacking & Banned Words
+            .replace(/\b(seriously|literally|honestly|lowkey|highkey)\s+(super|legit|clutch|insane|insanely)\b/gi, '$2')
+            .replace(/\b(is|lowkey|highkey|absolutely)\s+essential\b/gi, '$1 fantastic')
+            .replace(/\bessential\b/gi, 'fantastic');
     }
 
     // CRASH-PROOF EMOJI DENSITY ENGINE
@@ -666,6 +670,7 @@
         let result = [...arr];
         for (let e = 0; e < targetCount; e++) {
             let randIdx = Math.floor(Math.random() * result.length);
+            if (result[randIdx].includes('http')) continue; // Shield URLs from emojis
             let randEmoji = emojis[Math.floor(Math.random() * emojis.length)];
             result[randIdx] = Math.random() > 0.5 ? `${result[randIdx]} ${randEmoji}` : `${randEmoji} ${result[randIdx]}`;
         }
@@ -817,7 +822,7 @@ Weave the product title in naturally second for Variations 2 and 3! TERMINATION 
 "daily_thread": (String. DAILY THREAD CHAOS GEOMETRY: You MUST randomly choose ONE of these 5 layouts for every thread so the structure is 100% unpredictable: • Layout A: Lifestyle hook || [Price/Title] || [TARGET_SLOT] || Closing lifestyle thought. • Layout B: [Price/Title] || Lifestyle hook || [TARGET_SLOT] (No closing thought). • Layout C: Lifestyle hook || [TARGET_SLOT] || [Price/Title] (No closing thought). • Layout D: [Price/Title] || [TARGET_SLOT] || Closing lifestyle thought. • Layout E: Lifestyle hook || [Price/Title] || Closing lifestyle thought || [TARGET_SLOT]. PRICE PAIRING: Weave the sale_price and reg_price side-by-side in the exact same sentence using strictly '[sale_price], dropping from [reg_price]'. NEVER put them on separate lines! CONDITIONAL 'NONE' RULE: If reg_price is "NONE", drop the comparative phrase and just say '[sale_price]'. SENTENCE BLUEPRINT: Sentence 1 MUST be a natural conversational thought or a gerund (e.g., 'Keeping the pantry stocked...'). Sentence 2 MUST be the price and title. Sentence 3 MUST contain any extracted facts, limits, or shipping thresholds (do NOT duplicate them!). Weave the exact placeholder "[TARGET_SLOT]" naturally after the facts. RESTRICTION LOCK (ABSOLUTE): You MUST explicitly state any color/size restrictions or purchase limits in the Daily Thread! PRONOUN OPENING BAN: You are STRICTLY FORBIDDEN from starting the Daily Thread with 'I [verb]' or 'We [verb]' (e.g., NEVER start with 'I spotted', 'I found', 'I noticed'). Open with a natural conversational thought or a gerund! DAILY THREAD ANTI-PARROT LAW (ABSOLUTE): You are STRICTLY FORBIDDEN from copying OR PARAPHRASING the opening or closing sentences from Variation 1, 2, or 3! Changing one or two words (e.g., changing 'mornings' to 'afternoons') is NOT allowed! The Daily Thread MUST be 100% unique and share ZERO identical phrases with the variations! (CRITICAL CHECK: Did you accidentally paste the exact same closing sentence from Variation 3 into the Daily Thread? You MUST write a completely new one!) CLOSING THOUGHT: If your layout includes a closing thought, it MUST be a 100% brand new sentence. CTA BAN: You are STRICTLY FORBIDDEN from using Call-To-Action pointers before the link (e.g., NEVER say 'Find it here:', 'Check it out at'). Never use 'marked down' and never write 'regular' before the number! QUANTITY RULE: ONLY if raw text explicitly requires a cart quantity (e.g. 'ADD 3'), say 'add [X] to your order'. If no quantity requirement exists in the raw text, do NOT say 'add 1 to your order'! SHIPPING & PICKUP RULE: If price has 'Shipped' or 'Pickup', do NOT repeat a standalone phrase like 'delivery included' unless there is an order threshold (e.g. '10 minimum pickup', '$35 threshold') or Prime requirement. NEVER write 'free shipping', 'free pickup', or 'free store pickup'! ANTI-STUTTER: State price and title only ONCE. BUNDLE FIREWALL: Never say add multiple items if it is just a '2 Pack'. NUCLEAR BAN: 'share', 'grab', 'markdown', 'marked down'. BANNED WORDS: Sale, Discount, Price, Cost, Checkout, Buy, Grab, Share, Promotion, Markdown, Marked down. DELIMITER LOCK: Separate sentences with ' || '.),
 "emoji_pool": (Array of 10 literal Unicode emoji characters highly specific to the product. Do NOT use commercial/money emojis.),
 ${customLineInstruction}
-GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any of these banned words OR ANY OF THEIR VARIATIONS (e.g., stocking, restocked, markdowns, pricing, sales): Buy, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Markdown, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (BANNED in all contexts! NEVER write 'free of', 'fur-free', 'stress-free', 'hassle-free', 'mess-free', or 'clutter-free'—use words like 'peaceful', 'effortless', or 'uncomplicated'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Grab it now, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Shocking, Mind-blowing, Secret, Hack, viral, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, essential, perfect addition.`;
+GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any of these banned words OR ANY OF THEIR VARIATIONS (e.g., stocking, restocked, markdowns, pricing, sales): Buy, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Markdown, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (BANNED in all contexts! NEVER write 'free of', 'fur-free', 'stress-free', 'hassle-free', 'mess-free', or 'clutter-free'—use words like 'peaceful', 'effortless', or 'uncomplicated'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Grab it now, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Shocking, Mind-blowing, Secret, Hack, viral, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, ESSENTIAL, seriously, perfect addition.`;
         } else {
             prompt = `Analyze this deal: "${rawText}"
 Return ONLY a valid JSON object. Do NOT use markdown. Escape all internal double quotes. NO NOTES/COMMENTS (NUCLEAR): You are STRICTLY FORBIDDEN from adding any notes, explanations, commentary, or asterisks (*) inside or outside the JSON. Return pure JSON only.
@@ -832,7 +837,7 @@ Return ONLY a valid JSON object. Do NOT use markdown. Escape all internal double
 "daily_thread": (String. Weave the sale_price, reg_price, cleaned_title, retailer_name, features_catchall, and the exact placeholder "[TARGET_SLOT]" into a single natural, conversational message. Do NOT use hyphens to separate the price and title. QUANTITY RULE: If required, say 'add [X] to your order'. NEVER say 'holding area' or 'cart'. Write at least 3 distinct sentences. NUCLEAR BAN: You are STRICTLY FORBIDDEN from using the word 'share'. DELIMITER LOCK: You MUST separate every single sentence with the exact characters " || ".),
 "emoji_pool": (Array of 10 literal Unicode emoji characters highly specific to the product. Do NOT use commercial/money emojis.),
 ${customLineInstruction}
-GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any of these banned words OR ANY OF THEIR VARIATIONS (e.g., stocking, restocked, markdowns, pricing, sales): Buy, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Markdown, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (BANNED in all contexts! NEVER write 'free of' or 'fur-free'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Grab it now, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Shocking, Mind-blowing, Secret, Hack, viral, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, essential, perfect addition.`;
+GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any of these banned words OR ANY OF THEIR VARIATIONS (e.g., stocking, restocked, markdowns, pricing, sales): Buy, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Markdown, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (BANNED in all contexts! NEVER write 'free of', 'fur-free', 'stress-free', 'hassle-free', 'mess-free', or 'clutter-free'—use words like 'peaceful', 'effortless', or 'uncomplicated'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Grab it now, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Shocking, Mind-blowing, Secret, Hack, viral, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, ESSENTIAL, seriously, perfect addition.`;
         }
 
         try {
@@ -933,7 +938,13 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
                     postLines = Object.values(rawPost).map(s => String(s).trim()).filter(s => s.length > 0);
                 } else {
                     let str = String(rawPost);
-                    postLines = str.includes('||') ? str.split('||').map(s => s.trim()) : str.split(/(?<=[.!?])\s+/).map(s => s.trim());
+                    if (str.includes('||')) {
+                        postLines = str.split('||').map(s => s.trim());
+                    } else {
+                        // Bulletproof fallback for missing delimiters (avoids lookbehind crashes)
+                        postLines = str.match(/[^.!?]+[.!?]+/g) || [str];
+                        postLines = postLines.map(s => s.trim());
+                    }
                     postLines = postLines.filter(line => line.length > 0);
                 }
                 
@@ -1043,7 +1054,7 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
             document.getElementById('out-dt').setAttribute('data-raw', finalDt);
             currentRawOutput += `=== DAILY THREAD COMMENT ===\n${finalDt}\n\n`;
 
-            let phase0Text = `[DEAL: ${document.getElementById('dealNumber').value} | POSTER: ${posterName} | VER: v10.2.03]\n${rawText}`;
+            let phase0Text = `[DEAL: ${document.getElementById('dealNumber').value} | POSTER: ${posterName} | VER: v10.2.05]\n${rawText}`;
             if (customLine) phase0Text += `\n[Custom Injection: ${customLine}]`;
             document.getElementById('out-phase0').innerText = phase0Text;
 
@@ -1264,7 +1275,7 @@ GLOBAL SHIELD (ABSOLUTE SUPREME LAW): You are STRICTLY FORBIDDEN from using any 
         const emergencyPrompt = `SYSTEM ROLE: You are an advanced polymorphic deal-formatting engine. You will receive raw deal text containing a product, pricing, and a link. You will output EXACTLY 3 Post Variations, 3 Comments, and 1 Daily Thread Comment. Do NOT output any conversational filler or introductions.
 
 RULES:
-1. GLOBAL SHIELD (ABSOLUTE): You are STRICTLY FORBIDDEN from using any of these banned words or their variations: Buy, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Discounts, Markdown, Marked down, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (in ANY context! NEVER write 'free of', 'fur-free', 'stress-free', or 'hassle-free'—say 'effortless'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, essential, breeze, promotion.
+1. GLOBAL SHIELD (ABSOLUTE): You are STRICTLY FORBIDDEN from using any of these banned words or their variations: Buy, Purchase, Shop, Checkout, Cart, Basket, Price, Cost, Spend, Payment, Fee, Charge, Sale, Deal, Deals, Save, Savings, Discount, Discounts, Markdown, Marked down, Clearance, Offer, Promo, %, Coupon, Voucher, Claim, Redeem, Code, Free (in ANY context! NEVER write 'free of', 'fur-free', 'stress-free', or 'hassle-free'—say 'effortless'), Hurry, Act fast, Today only, Ending soon, Limited time, Flash sale, Sold out, Miss out, Rare, Exclusive, Restock, Gone, Run, Grab, Like, Share, Tag, Comment, React, Vote, Link, URL, Website, Click, Tap, Bio, DM, Alert, Game changer, Stock, Inventory, elevate, transform, seamless, oasis, upgrade, must-have, ESSENTIAL, seriously, breeze, promotion, perfect addition.
 2. DATA INTEGRITY & FORMATTING:
    - You MUST include the exact sale price (ALWAYS with a '$' sign, e.g. '$14.99 Shipped' or '$3.99 Pickup').
    - PRICE PAIRING & DETERMINISTIC ROTATION LAW: You MUST weave the sale price and regular price side-by-side in the EXACT SAME SENTENCE. NEVER put them on separate lines! You MUST use this exact formatting: Var 1 MUST say 'on [Retailer] for [sale_price], down from [reg_price].' Var 2 MUST say 'on [Retailer] for [sale_price], previously [reg_price].' Var 3 MUST say 'on [Retailer] for [sale_price], was [reg_price].' Daily Thread MUST say 'on [Retailer] for [sale_price], dropping from [reg_price].' Make the price statement its own distinct sentence! Do NOT combine the opening scenario and the price into one giant run-on sentence using 'and' or 'when'! Sentence 1 MUST end with a period. Sentence 2 MUST start with the product title.
